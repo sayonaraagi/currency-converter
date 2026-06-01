@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Currency Converter</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        /* Красивый градиентный фон для всего сайта */
+        body {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+        }
+
+        /* Стильная стеклянная карточка (Glassmorphism) */
+        .converter-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .converter-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Поля ввода */
+        .form-control, .form-select {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 500;
+        }
+
+        .form-control:focus, .form-select:focus {
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.5);
+            border: 1px solid #00f2fe;
+        }
+
+        /* Крутая анимированная кнопка */
+        .btn-convert {
+            background: linear-gradient(45deg, #00c6ff 0%, #0072ff 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .btn-convert:hover {
+            background: linear-gradient(45deg, #0072ff 0%, #00c6ff 100%);
+            box-shadow: 0 5px 15px rgba(0, 198, 255, 0.4);
+        }
+
+        /* Контейнер для GIF анимации */
+        .gif-container {
+            text-align: center;
+            padding: 20px 0 10px 0;
+        }
+
+        .gif-container img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        }
+
+        label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #e0e0e0;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+
+            <div class="card converter-card shadow-lg">
+
+                <div class="gif-container">
+                    <img src="https://media.tenor.com/Lm_Ttb2VBrAAAAA1/cat-business.webp" alt="Money GIF">
+                </div>
+
+                <div class="card-body p-4 pt-2">
+                    <h2 class="text-center mb-4 fw-bold" style="background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                        Конвертер Валют
+                    </h2>
+
+                    <form th:action="@{/convert}" method="post">
+                        <div class="mb-3">
+                            <label for="amount" class="form-label d-flex align-items-center">
+                                <span class="material-icons me-1" style="font-size: 18px;">payments</span> Сумма для перевода
+                            </label>
+                            <input type="number" step="0.01" class="form-control text-center fs-5" id="amount" name="amount" th:value="${amount} ?: 100" required>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col">
+                                <label for="fromCurrency" class="form-label">Из валюты</label>
+                                <select class="form-select text-center" id="fromCurrency" name="fromCurrency">
+                                    <option value="USD" th:selected="${fromCurrency == 'USD'}">🇺🇸 USD</option>
+                                    <option value="EUR" th:selected="${fromCurrency == 'EUR'}">🇪🇺 EUR</option>
+                                    <option value="RUB" th:selected="${fromCurrency == 'RUB'}">🇷🇺 RUB</option>
+                                    <option value="KGS" th:selected="${fromCurrency == 'KGS'}">🇰🇬 KGS</option>
+                                    <option value="KZT" th:selected="${fromCurrency == 'KZT'}">🇰🇿 KZT</option>
+                                </select>
+                            </div>
+
+                            <div class="col">
+                                <label for="toCurrency" class="form-label">В валюту</label>
+                                <select class="form-select text-center" id="toCurrency" name="toCurrency">
+                                    <option value="EUR" th:selected="${toCurrency == 'EUR' or toCurrency == null}">🇪🇺 EUR</option>
+                                    <option value="USD" th:selected="${toCurrency == 'USD'}">🇺🇸 USD</option>
+                                    <option value="RUB" th:selected="${toCurrency == 'RUB'}">🇷🇺 RUB</option>
+                                    <option value="KGS" th:selected="${toCurrency == 'KGS'}">🇰🇬 KGS</option>
+                                    <option value="KZT" th:selected="${toCurrency == 'KZT'}">🇰🇿 KZT</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-convert w-100 fs-6 d-flex align-items-center justify-content-center">
+                            <span class="material-icons me-2">autorenew</span> Рассчитать курс
+                        </button>
+                    </form>
+
+                    <div th:if="${result}" class="mt-4 p-3 border-0 rounded-3 text-center animate__animated animate__fadeIn" style="background: rgba(0, 242, 254, 0.1); border: 1px solid rgba(0, 242, 254, 0.3) !important;">
+                        <div class="text-white-50 small text-uppercase tracking-wider mb-1">Результат конвертации</div>
+                        <h3 class="mb-0 text-info fw-bold">
+                            <span th:text="${amount}"></span> <span th:text="${fromCurrency}" class="fs-5 fw-normal text-white-50"></span> =
+                            <span th:text="${result}" class="text-warning"></span> <span th:text="${toCurrency}" class="fs-5 fw-normal text-white-50"></span>
+                        </h3>
+                    </div>
+
+                    <div th:if="${error}" class="alert alert-danger mt-4 text-center border-0 rounded-3" style="background: rgba(220, 53, 69, 0.2); color: #ff808b;" th:text="${error}"></div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
