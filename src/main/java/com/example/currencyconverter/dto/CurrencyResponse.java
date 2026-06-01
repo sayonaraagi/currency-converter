@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Map;
 
-@JsonIgnoreProperties(ignoreUnknown = true) // Игнорируем все остальные 20+ полей, которые нам не нужны
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record CurrencyResponse(
         String result,
 
-        @JsonProperty("base_currency_code") // Защита на случай, если ключ называется иначе
+        @JsonProperty("base_currency_code")
         String base_code,
 
         @JsonProperty("rates")
